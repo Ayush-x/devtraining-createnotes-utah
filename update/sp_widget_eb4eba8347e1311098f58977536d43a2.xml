@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function() {  /* widget controller */  var c = this;};]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>notes_list</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Notes List</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() 
+ {
+	//create an array to populate with notes
+	data.notes = []; // Here we are adding a 'notes' property (array of objects of notes of the current logged in user) to the global 'data' object
+	var noteGR = new GlideRecord('x_snc_createnotes_note'); // Next we will glide over the "x_snc_createnotes_note" table which stores all the notes. 
+	noteGR.addQuery('user', gs.getUser().getID());// We will search for all the notes of the current logged user.
+	noteGR.orderByDesc('sys_created_on');
+	noteGR.query();
+	while (noteGR.next()) //noteGR object will have all the notes records of current user.
+	{
+		var noteObj = {};// This a single note object containing the notes information for each single note record in noteGR object.
+		                 // This object will have only number, title and sys_id of the note record.  
+		//To achieve this, we will use service portal helper method 'getRecordDisplayValues' to get some display values
+		// 'getRecordDisplayValues' method Copies display values for the specified fields from the passed GlideRecord object into the data parameter object: 'noteObj'.
+		$sp.getRecordDisplayValues(noteObj, noteGR, 'number,title,sys_id');
+		//Now, get the first 20 characters of the description and put it into the 'note' property of the noteObj object.
+		noteObj.note = noteGR.getValue('note').slice(0,20);
+		//push the populated object into the array of objects, 'data.notes' which we created very first.
+		data.notes.push(noteObj);
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2023-10-02 19:23:56</sys_created_on>
+        <sys_id>eb4eba8347e1311098f58977536d43a2</sys_id>
+        <sys_mod_count>7</sys_mod_count>
+        <sys_name>Notes List</sys_name>
+        <sys_package display_value="CreateNotes" source="x_snc_createnotes">df5fd9a5090232007f44e1046c8ff69f</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="CreateNotes">df5fd9a5090232007f44e1046c8ff69f</sys_scope>
+        <sys_update_name>sp_widget_eb4eba8347e1311098f58977536d43a2</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2023-10-02 22:28:40</sys_updated_on>
+        <template><![CDATA[<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <h3 class="panel-title pull-left">
+      ${Notes}<!--This is a Notes Widget-->
+    </h3>
+  </div>
+  <div class="list-group">
+    <a class="list-group-item" ng-repeat="note in data.notes">
+      <h4 class="list-group-item-heading">
+        {{note.title}} <!--'note' is the loop variable in above Angular code: "note in data.notes". note.title means title of that note record-->
+      </h4>
+      <p class="list-group-item-text">
+        {{note.note}}
+      </p>
+    </a>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>
