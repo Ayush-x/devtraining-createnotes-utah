@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
-        <client_script><![CDATA[api.controller=function() {  /* widget controller */  var c = this;};]]></client_script>
+        <client_script><![CDATA[function($rootScope,$scope) {
+  /* widget controller */
+  var c = this;
+  c.selectItem = function(idx) {//This function will be executed when the event occurs
+    var id = c.data.notes[idx].sys_id;//id will have the sys_id of the note record which is clicked, i.e. the note record set as the note[] property of the data object of this widget object.
+    console.log('Note ID: ' + id);
+    $rootScope.noteID = id;//setting the noteID property of the $rootScope. These set properties can be used by the other widgets involved in responding to the event.
+		$rootScope.$emit('selectNote', id);//emit the event up the hierarchy.
+  }
+}]]></client_script>
         <controller_as>c</controller_as>
         <css/>
         <data_table>sp_instance</data_table>
@@ -28,7 +37,7 @@
 	while (noteGR.next()) //noteGR object will have all the notes records of current user.
 	{
 		var noteObj = {};// This a single note object containing the notes information for each single note record in noteGR object.
-		                 // This object will have only number, title and sys_id of the note record.  
+		// This object will have only number, title and sys_id of the note record.  
 		//To achieve this, we will use service portal helper method 'getRecordDisplayValues' to get some display values
 		// 'getRecordDisplayValues' method Copies display values for the specified fields from the passed GlideRecord object into the data parameter object: 'noteObj'.
 		$sp.getRecordDisplayValues(noteObj, noteGR, 'number,title,sys_id');
@@ -43,14 +52,14 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2023-10-02 19:23:56</sys_created_on>
         <sys_id>eb4eba8347e1311098f58977536d43a2</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>10</sys_mod_count>
         <sys_name>Notes List</sys_name>
         <sys_package display_value="CreateNotes" source="x_snc_createnotes">df5fd9a5090232007f44e1046c8ff69f</sys_package>
         <sys_policy/>
         <sys_scope display_value="CreateNotes">df5fd9a5090232007f44e1046c8ff69f</sys_scope>
         <sys_update_name>sp_widget_eb4eba8347e1311098f58977536d43a2</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2023-10-02 22:28:40</sys_updated_on>
+        <sys_updated_on>2023-10-03 09:07:45</sys_updated_on>
         <template><![CDATA[<div class="panel panel-default">
   <div class="panel-heading clearfix">
     <h3 class="panel-title pull-left">
@@ -58,7 +67,7 @@
     </h3>
   </div>
   <div class="list-group">
-    <a class="list-group-item" ng-repeat="note in data.notes">
+    <a class="list-group-item" ng-click="c.selectItem($index)" ng-repeat="note in data.notes"><!--We will add a new event 'ng-click'. When this event will occur, we will call the selectItem() method-->
       <h4 class="list-group-item-heading">
         {{note.title}} <!--'note' is the loop variable in above Angular code: "note in data.notes". note.title means title of that note record-->
       </h4>
